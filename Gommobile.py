@@ -53,7 +53,7 @@ if __name__ == '__main__':
 
     # Acessa os dados na planilha 'sobs.xlsx' para começar a trabalhar.
     for sheet in wb.worksheets:
-        # try:
+        try:
             # Busca o valor da SOB e clica
             WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, "*//tr/td[contains(text(), '" + str(sheet['A1'].value) + "')]"))).click()
             # Pressina o TAB uma vez e depois ENTER, para abrir a janela de inserção de dados para a SOB.
@@ -71,16 +71,19 @@ if __name__ == '__main__':
             WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, '//*[@id="txtIniTarefa"]'))).click()
             # Clica no botão "agora"
             WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ui-datepicker-div"]/div[3]/button[1]'))).click()
-            
+            try: # Verifica se a célula B1 da planilha 'sobs.xlsx' consta um 'X' para energizar a SOB. Caso não tenha, finaliza parcialmente.
+                if str(sheet['B1'].value) == 'X':
+                    WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, '//*[@id="txtEnergizacao"]'))).click()
+                    WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ui-datepicker-div"]/div[3]/button[1]'))).click()
+            except NoSuchElementException:
+                continue
             # Finaliza a SOB
             # WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, '/html/body/div[4]/div[3]/div/button[1]/span'))).click()
+            time.sleep(5)
             # Cancela a SOB
             WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, '/html/body/div[4]/div[3]/div/button[2]/span'))).click()
-        # except NoSuchElementException:  # Caso não encontre, abre o arquivo txt e registra a data, o código baremo e sua quantidade
-            # log = open("BaremosPendentes.txt", "a")
-            # log.write(str(sheet['H1'].value) + " " + str(sheet['A1'].value) + " " + str(cell.value) + " " + str(cell2.value) + "\n")
-            # log.close()
-           # continue
-# Ao fim do loop de inserção de baremos, clica no botão "registrar programação"
-#driver.find_element_by_xpath('//*[@id="ctl00_ContentPlaceHolder1_btnEnviarItens"]').click()
-#print(str(sheet['A1'].value) + " programada com êxito.")
+        except NoSuchElementException:  # Caso não encontre, abre o arquivo txt e registra o número da SOB não movimentada.
+            log = open("ErroSobs.txt", "a")
+            log.write(str(sheet['A1'].value) + "\n")
+            log.close()
+            continue
