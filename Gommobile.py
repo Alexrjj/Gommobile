@@ -70,7 +70,12 @@ if __name__ == '__main__':
             webdriver.ActionChains(driver).send_keys(Keys.RETURN).perform()
 
             WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, '//*[@id="gvItens"]/tbody/tr[1]/th[1]'))).click()
-            
+            WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, '//*[@id="tabGeral"]'))).click()
+            WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, '//*[@id="txtDtSaida"]'))).click()
+            WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ui-datepicker-div"]/div[3]/button[1]'))).click()
+            WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, '//*[@id="txtIniTarefa"]'))).click()
+            WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ui-datepicker-div"]/div[3]/button[1]'))).click()
+            # WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, '/html/body/div[4]/div[3]/div/button[1]/span'))).click() # Finaliza a SOB
             # driver.find_element_by_xpath("*//tr/td[contains(text(), '" + str(cell.value) + "')]/preceding-sibling::td/input").click()
 #        except NoSuchElementException:  # Caso não encontre, abre o arquivo txt e registra a data, o código baremo e sua quantidade
         #    log = open("BaremosPendentes.txt", "a")
