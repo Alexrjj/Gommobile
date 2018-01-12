@@ -48,7 +48,7 @@ if __name__ == '__main__':
     for sheet in wb.worksheets:
         try:
             # Busca o valor da SOB e clica
-            WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, "*//tr/td[contains(text(), '" + str(sheet['A1'].value) + "')]"))).click()
+            WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, "*//tr/td[contains(text(), '" + str(sheet['A2'].value) + "')]"))).click()
             # Pressina o TAB uma vez e depois ENTER, para abrir a janela de inserção de dados para a SOB.
             webdriver.ActionChains(driver).send_keys(Keys.TAB).perform()
             webdriver.ActionChains(driver).send_keys(Keys.RETURN).perform()
@@ -67,7 +67,7 @@ if __name__ == '__main__':
 
             # Verifica se a célula B1 da planilha 'sobs.xlsx' consta um 'X' para energizar a SOB. Caso não tenha, finaliza parcialmente.
             try:
-                if str(sheet['B1'].value) == 'X':
+                if str(sheet['I2'].value) == 'X':
                     WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, '//*[@id="txtEnergizacao"]'))).click()
                     WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ui-datepicker-div"]/div[3]/button[1]'))).click()
             except NoSuchElementException:
@@ -78,6 +78,6 @@ if __name__ == '__main__':
             WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, '/html/body/div[4]/div[3]/div/button/span'))).click()
         except NoSuchElementException:  # Caso não encontre a SOB, abre o arquivo txt e registra o número da SOB não movimentada.
             log = open("ErroSobs.txt", "a")
-            log.write(str(sheet['A1'].value) + "\n")
+            log.write(str(sheet['A2'].value) + "\n")
             log.close()
             continue
