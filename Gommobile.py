@@ -1,6 +1,7 @@
 ﻿# -*- coding: utf-8 -*-
 import openpyxl
-from selenium.common.exceptions import NoSuchElementException
+import time
+from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.wait import WebDriverWait
@@ -48,35 +49,44 @@ if __name__ == '__main__':
     for sheet in wb.worksheets:
         try:
             # Busca o valor da SOB e clica
-            WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, "*//tr/td[contains(text(), '" + str(sheet['A2'].value) + "')]"))).click()
+            WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, "*//tr/td[contains(text(), '" + str(sheet['A2'].value) + "')]"))).click()
             # Pressina o TAB uma vez e depois ENTER, para abrir a janela de inserção de dados para a SOB.
             webdriver.ActionChains(driver).send_keys(Keys.TAB).perform()
             webdriver.ActionChains(driver).send_keys(Keys.RETURN).perform()
             # Seleciona todos os baremos executados
-            WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, '//*[@id="gvItens"]/tbody/tr[1]/th[1]'))).click()
+            WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, '//*[@id="gvItens"]/tbody/tr[1]/th[1]'))).click()
             # Clica na aba "Geral"
-            WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, '//*[@id="tabGeral"]'))).click()
+            WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, '//*[@id="tabGeral"]'))).click()
+
+            # Identifica a data e hora do campo "Fim Tarefa" e salva numa variável
+            dataHora = driver.find_element_by_id('txtFimTarefa').get_attribute('value')
+
             # Clica na caixa de informação de "Saída"
-            WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, '//*[@id="txtDtSaida"]'))).click()
-            # Clica no botão "agora"
-            WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ui-datepicker-div"]/div[3]/button[1]'))).click()
+            infSaida = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, '//*[@id="txtDtSaida"]')))
+            infSaida.send_keys(dataHora)
+
             # Clica na caixa de informação de "Início Tarefa"
-            WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, '//*[@id="txtIniTarefa"]'))).click()
-            # Clica no botão "agora"
-            WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ui-datepicker-div"]/div[3]/button[1]'))).click()
+            iniTarefa = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, '//*[@id="txtIniTarefa"]')))
+            iniTarefa.send_keys(dataHora)
 
             # Verifica se a célula B1 da planilha 'sobs.xlsx' consta um 'X' para energizar a SOB. Caso não tenha, finaliza parcialmente.
             try:
                 if str(sheet['I2'].value) == 'X':
-                    WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, '//*[@id="txtEnergizacao"]'))).click()
-                    WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, '//*[@id="ui-datepicker-div"]/div[3]/button[1]'))).click()
+                    energiza = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, '//*[@id="txtEnergizacao"]')))
+                    energiza.send_keys(dataHora)
             except NoSuchElementException:
-                continue
+                pass
+
             # Finaliza a SOB
-            WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, '/html/body/div[4]/div[3]/div/button[1]/span'))).click()
+            WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, '/html/body/div[4]/div[3]/div/button[1]/span'))).click()
             # Clica no botão "Ok"
-            WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, '/html/body/div[4]/div[3]/div/button/span'))).click()
-        except NoSuchElementException:  # Caso não encontre a SOB, abre o arquivo txt e registra o número da SOB não movimentada.
+            time.sleep(5)
+            # driver.find_element_by_xpath('/html/body/div[2]/div[3]/div/button/span').click()
+            # driver.find_element_by_partial_link_text('OK').click()
+            # driver.find_element_by_link_text('OK').click()
+            webdriver.ActionChains(driver).send_keys(Keys.SPACE).perform()
+            # WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, '/html/body/div[2]/div[3]/div/button/span'))).click()
+        except TimeoutException:  # Caso não encontre a SOB, abre o arquivo txt e registra o número da SOB não movimentada.
             log = open("ErroSobs.txt", "a")
             log.write(str(sheet['A2'].value) + "\n")
             log.close()
