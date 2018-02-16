@@ -76,7 +76,7 @@ if __name__ == '__main__':
                     energiza.send_keys(dataHora)
                     iniTarefa.click()
             except NoSuchElementException:
-                pass
+                continue
 
             # Finaliza a SOB
             m = 0
@@ -84,15 +84,10 @@ if __name__ == '__main__':
                 webdriver.ActionChains(driver).send_keys(Keys.TAB).perform()
                 m += 1
             webdriver.ActionChains(driver).send_keys(Keys.SPACE).perform()
-            # WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, '/html/body/div[4]/div[3]/div/button[1]/span'))).click()
             # Clica no botão "Ok"
             time.sleep(12)
-            # driver.find_element_by_xpath('/html/body/div[2]/div[3]/div/button/span').click()
-            # driver.find_element_by_partial_link_text('OK').click()
-            # driver.find_element_by_link_text('OK').click()
             webdriver.ActionChains(driver).send_keys(Keys.TAB).perform()
             webdriver.ActionChains(driver).send_keys(Keys.SPACE).perform()
-            # WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, '/html/body/div[2]/div[3]/div/button/span'))).click()
         except TimeoutException:  # Caso não encontre a SOB, abre o arquivo txt e registra o número da SOB não movimentada.
             log = open("ErroSobs.txt", "a")
             log.write(str(sheet['A2'].value) + "\n")
