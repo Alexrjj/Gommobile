@@ -86,6 +86,8 @@ if __name__ == '__main__':
             webdriver.ActionChains(driver).send_keys(Keys.SPACE).perform()
             # Clica no botão "Ok"
             time.sleep(12)
+            driver.save_screenshot(str(sheet['A2'].value) + '.png')
+            print(str(sheet['A2'].value) + ' finalizada com êxito.')
             webdriver.ActionChains(driver).send_keys(Keys.TAB).perform()
             webdriver.ActionChains(driver).send_keys(Keys.SPACE).perform()
         except TimeoutException:  # Caso não encontre a SOB, abre o arquivo txt e registra o número da SOB não movimentada.
